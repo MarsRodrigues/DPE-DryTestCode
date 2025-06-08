@@ -5,7 +5,7 @@ Program elaborated to analyse previously acquired thermal images from a FLUKE ca
 ----------------------------------------------------------------------
 Description:
 Python program used to analyse previously acquired thermal images from a FLUKE camera.
-The program reads thermal images from a folder, processes them to detect leaks using XAI techniques, and saves the results to an output video file.
+The program reads thermal images from a folder, processes them to detect leaks using explainability techniques, and saves the results to an output video file.
 The program loops through the frames, applies various image processing techniques, and overlays the results on the original frames.
 Some of the techniques used include entropy, variance, and region analysis to identify potential leak zones.
 
@@ -38,7 +38,7 @@ from skimage.filters.rank import entropy as sk_entropy
 from skimage.measure import regionprops
 
 # --- Seaborn and Matplotlib Style ---
-# Cohesive color palette (mainly blue/green/red for XAI clarity)
+# Cohesive color palette (mainly blue/green/red for clarity)
 blue_palette = sns.color_palette("Blues", 8)
 red_palette = sns.color_palette("Reds", 8)
 green_palette = sns.color_palette("Greens", 8)
@@ -80,7 +80,7 @@ plt.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
 
 # --- Utility for cohesive plots ---
 def make_cohesive_axes(ax):
-    """Standardize axes for XAI plots: bold, grid, and minimal spines."""
+    """Standardize axes for plots: bold, grid, and minimal spines."""
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.grid(True, which='major', linestyle=':', linewidth=1, alpha=0.6)
@@ -89,9 +89,9 @@ def make_cohesive_axes(ax):
     ax.xaxis.label.set_fontweight('bold')
     ax.yaxis.label.set_fontweight('bold')
 
-# -------------- XAI HELPER FUNCTIONS --------------
+# -------------- HELPER FUNCTIONS --------------
 
-def xai_legend_overlay(frame):
+def legend_overlay(frame):
     legend = [
         ((255, 255, 255),  "Red Cross: Variance"),
         ((255, 255, 255),  "Blue Box: ROI"),
@@ -119,13 +119,12 @@ def xai_legend_overlay(frame):
             cv2.arrowedLine(frame, (24, y), (40, y), color, 3, tipLength=0.6)
         else:
             cv2.circle(frame, (9, y), 3, color, -1)
-        # Put text (always white, left aligned, no color)
         cv2.putText(frame, desc, (14, y + 1), cv2.FONT_HERSHEY_TRIPLEX, 0.4, (255,255,255), 1, cv2.LINE_AA)
 
     return frame
 
 
-def xai_frame_explanation(frame, text):
+def frame_explanation(frame, text):
     """Overlay a single-line explanation at the bottom for human-understandable feature attribution."""
     overlay = frame.copy()
     h, w = frame.shape[:2]
@@ -256,7 +255,7 @@ def choose_path():
 
     return final_folder_path
 
-# -------------- Data Reading & Conversion (XAI docstrings and np.ptp fix) --------------
+# -------------- Data Reading & Conversion (docstrings and np.ptp fix) --------------
 
 def is_csv_file(file_path):
     """Heuristically detects if a file is a CSV (vs. Excel)."""
@@ -286,7 +285,7 @@ def read_data_file(file_path):
 
 def temperature_to_grayscale(matrix, min_temp=10.0, max_temp=30.0):
     """
-    XAI: Converts a thermal temperature matrix into a grayscale image.
+    Converts a thermal temperature matrix into a grayscale image.
     High temp = dark (so coldest pixels are visually highlighted).
     """
     denom = max_temp - min_temp
@@ -296,7 +295,7 @@ def temperature_to_grayscale(matrix, min_temp=10.0, max_temp=30.0):
         norm = ((matrix - min_temp) / denom) * 255.0
         norm = np.nan_to_num(norm, nan=0.0, posinf=255.0, neginf=0.0)
     norm = np.clip(norm, 0, 255)
-    inverted = 255 - norm  # XAI: invert so "cold spots" appear bright
+    inverted = 255 - norm  # invert so "cold spots" appear bright
     return inverted.astype(np.uint8)
 
 def save_max_delta_matrix_excel(folder_path, output_excel_name):
@@ -443,8 +442,8 @@ def area_from_metric_map(metric_map, mask_roi, min_area=10):
 
 def get_valid_frame_range(frame_count, fps=10, start_sec=3, end_sec=1):
     """
-    XAI: Returns start and end frame indices to skip the first and last seconds,
-    focusing analysis *after the system stabilizes* and *before any leak is observable*.
+    Returns start and end frame indices to skip the first and last seconds,
+    focusing analysis after the system stabilizes and before any leak is observable.
     This helps avoid artifacts or camera initialization effects.
     """
     start_frame = int(start_sec * fps)
@@ -455,7 +454,7 @@ def get_valid_frame_range(frame_count, fps=10, start_sec=3, end_sec=1):
 
 def analyze_and_mark_areas_combined(masked_video_path, mask, out_video_path, min_area=10, fps=10):
     """
-    XAI: Analyze masked thermal video, overlaying on each frame:
+    Analyze masked thermal video, overlaying on each frame:
       - Entropy region (static, red contour),
       - Variance region (per-frame, green contour),
       - Coldest pixel (per-frame, blue dot).
@@ -667,12 +666,12 @@ def make_side_by_side_video(folder_path, filenames, output_filename):
     out.release()
     print(f"Side-by-side video saved to: {os.path.join(folder_path, output_filename)}")
 
-# -------------- XAI-ified Key Analysis Functions (with explainable comments) --------------
+# -------------- Key Analysis Functions (with explainable comments) --------------
 
 def create_thermal_video_from_xls(folder_path, video_path, min_temp=10.0, max_temp=30.0, fps=10):
     """
     Reads all .xls thermal frames in the folder, converts them to grayscale images, and writes a video.
-    XAI: All steps (reading, normalization, frame stacking) are visible and reproducible.
+    All steps (reading, normalization, frame stacking) are visible and reproducible.
     """
     files = [f for f in os.listdir(folder_path) if f.lower().endswith('.xls')]
     files = natsorted(files)
