@@ -137,7 +137,7 @@ def decode_waveform_data(raw_data):
         scaling_factor = 8 / 65535  # Simplified scaling factor
         decoded_values = (decoded_values + 32768) * scaling_factor - 4
 
-        return metadata, decoded_values[11:1011]  # Trim noise, return 989 values
+        return metadata, decoded_values[11:1011] 
     except Exception as e:
         print(f"Decoding Error: {e}")
         return "Error", []
