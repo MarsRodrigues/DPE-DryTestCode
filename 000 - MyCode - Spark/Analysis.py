@@ -196,7 +196,7 @@ def analyze_waveforms_raw_threshold(wave_datalist, id_list):
         else:
             period_value = np.nan  # or 'Null'
 
-        # Ensure we only process waveforms with valid peaks
+        # Ensure only process waveforms with valid peaks
         if num_peaks_value >0:
             try:
                 average_value = np.mean(waveform)
