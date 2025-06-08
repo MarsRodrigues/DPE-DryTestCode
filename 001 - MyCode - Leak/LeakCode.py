@@ -134,13 +134,13 @@ def acqmain():
     return downsampled_delta
 
 """
-Main function for XAI Leak Analysis.
+Main function for Leak Analysis.
 This function will read the downsampled delta matrix and perform analysis.
 It will also handle video processing and overlaying results.
 """
 
 # --- Seaborn and Matplotlib Style ---
-# Cohesive color palette (mainly blue/green/red for XAI clarity)
+# Cohesive color palette (mainly blue/green/red for clarity)
 blue_palette = sns.color_palette("Blues", 8)
 red_palette = sns.color_palette("Reds", 8)
 green_palette = sns.color_palette("Greens", 8)
@@ -156,7 +156,7 @@ custom_palette = [
 
 # --- Utility for cohesive plots ---
 def make_cohesive_axes(ax):
-    """Standardize axes for XAI plots: bold, grid, and minimal spines."""
+    """Standardize axes for plots: bold, grid, and minimal spines."""
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.grid(True, which='major', linestyle=':', linewidth=1, alpha=0.6)
@@ -165,9 +165,9 @@ def make_cohesive_axes(ax):
     ax.xaxis.label.set_fontweight('bold')
     ax.yaxis.label.set_fontweight('bold')
 
-# -------------- XAI HELPER FUNCTIONS --------------
+# -------------- HELPER FUNCTIONS --------------
 
-def xai_legend_overlay(frame):
+def legend_overlay(frame):
     legend = [
         ((255, 255, 255),  "Red Cross: Variance"),
         ((255, 255, 255),  "Blue Box: ROI"),
@@ -201,7 +201,7 @@ def xai_legend_overlay(frame):
     return frame
 
 
-def xai_frame_explanation(frame, text):
+def frame_explanation(frame, text):
     """Overlay a single-line explanation at the bottom for human-understandable feature attribution."""
     overlay = frame.copy()
     h, w = frame.shape[:2]
@@ -210,7 +210,7 @@ def xai_frame_explanation(frame, text):
     cv2.putText(frame, text, (14, h-12), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2)
     return frame
 
-# -------------- Data Reading & Conversion (XAI docstrings and np.ptp fix) --------------
+# -------------- Data Reading & Conversion (docstrings and np.ptp fix) --------------
 
 def apply_mask_to_thermal_video(folder_path, clean_mask, min_temp=10.0, max_temp=30.0):
     thermal_video_path = os.path.join(folder_path, "ThermalVideo.avi")
@@ -259,7 +259,7 @@ def apply_mask_to_thermal_video(folder_path, clean_mask, min_temp=10.0, max_temp
 
 def analyze_and_mark_areas_combined(masked_video_path, mask, out_video_path, min_area=10, fps=24):
     """
-    XAI: Analyze masked thermal video, overlaying on each frame:
+    Analyze masked thermal video, overlaying on each frame:
     - Entropy region (static, red contour),
     - Variance region (per-frame, green contour),
     - Coldest pixel (per-frame, blue dot).
@@ -440,7 +440,7 @@ def analyze_and_mark_areas_combined(masked_video_path, mask, out_video_path, min
     else:
         print("Leak zone is most frequent variance region not explained by coldest pixel.")
 
-# -------------- XAI-ified Key Analysis Functions (with explainable comments) --------------
+# -------------- Key Analysis Functions (with explainable comments) --------------
 
 def plot_binary_ok_mask(folder_path, matrix, save_path=None):
     """
@@ -481,9 +481,9 @@ def put_title(image, text):
     cv2.putText(image, text, org, cv2.FONT_HERSHEY_SIMPLEX, scale, color, thickness, cv2.LINE_AA)
     return image
 
-# --- XAI Main ---
+# --- Main ---
 
-def xaimain(downsampled_delta):
+def main(downsampled_delta):
 
     folder_path = r"C:\Users\Maria Rodrigues\Desktop\ThermalAnalysis"
         
@@ -504,11 +504,11 @@ def main():
     downsampled_delta = acqmain()
     acquisition_time = time.time() - start_time
         
-    # Initialize the XAI leak analysis module
+    # Initialize the leak analysis module
     analysis_time = time.time()
-    xaimain(downsampled_delta)
+    main(downsampled_delta)
     analysis_time = time.time() - analysis_time
-    print(f"XAI Leak Analysis completed in {analysis_time:.2f} seconds.")
+    print(f"Leak Analysis completed in {analysis_time:.2f} seconds.")
     
     # Print the results
     print("Leak Analysis Completed.")
